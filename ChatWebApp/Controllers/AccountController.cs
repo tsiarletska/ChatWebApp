@@ -19,32 +19,30 @@ namespace ChatApp.Controllers
             return View();
         }
 
-        // POST: Handle Login Logic
+        // POST
         [HttpPost]
         public IActionResult Login(string nickname, string password)
         {
-            // Validate user credentials
             var user = _context.User.FirstOrDefault(u => u.Nickname == nickname && u.Password == password);
             if (user != null)
             {
-                // Store user info in session or cookie
                 HttpContext.Session.SetString("UserId", user.UserId.ToString());
                 HttpContext.Session.SetString("Nickname", user.Nickname);
 
-                return RedirectToAction("Index", "Home"); // Redirect to Home after login
+                return RedirectToAction("Index", "Home"); 
             }
 
             ViewBag.Error = "Invalid credentials. Please try again.";
             return View();
         }
 
-        // GET: Register Page
+        // GET
         public IActionResult Register()
         {
             return View();
         }
 
-        // POST: Handle Registration Logic
+        // POST
         [HttpPost]
         public IActionResult Register(User newUser)
         {
