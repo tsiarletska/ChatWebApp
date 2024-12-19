@@ -10,7 +10,6 @@ else if (Model != null)
 {
     <p>User Found: <strong>@Model.Nickname</strong></p>
 
-    <!-- Message Form -->
     <form asp-action="SendMessageToUser" asp-controller="Chat" method="post">
         <input type="hidden" name="recipientId" value="@Model.UserId" />
         <label for="message">Write a message:</label>
