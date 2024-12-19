@@ -15,17 +15,14 @@ namespace ChatWebApp.Data
         public DbSet<Message> Message { get; set; }
         public DbSet<AuthToken> AuthToken { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure Chat and Messages relationship
             modelBuilder.Entity<Chat>()
                 .HasMany(c => c.Messages)
                 .WithOne(m => m.Chat)
                 .HasForeignKey(m => m.ChatId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Configure Chat to AdminUser and ParticipantUser relationships
             modelBuilder.Entity<Chat>()
                 .HasOne(c => c.AdminUser)
                 .WithMany()
