@@ -5,7 +5,6 @@
 
 <h2>Chat Messages</h2>
 
-<!-- Display messages -->
 <ul id="messages">
     @foreach (var message in Model)
     {
@@ -15,14 +14,13 @@
     }
 </ul>
 
-<!-- Send message form -->
 <form id="messageForm">
     <input type="hidden" id="chatId" value="@ViewBag.ChatId" />
     <textarea id="messageInput" placeholder="Type your message..." rows="4" required></textarea>
     <button type="submit">Send</button>
 </form>
 
-<!-- SignalR Scripts -->
+<!-- SignalR -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
     const chatId = document.getElementById('chatId').value;
@@ -35,7 +33,6 @@
         connection.invoke("JoinChat", chatId); // Join the current chat group
     }).catch(err => console.error(err.toString()));
 
-    // Listen for incoming messages
     connection.on("ReceiveMessage", (sender, message) => {
         const messagesList = document.getElementById("messages");
         const newMessage = document.createElement("li");
@@ -43,7 +40,6 @@
         messagesList.appendChild(newMessage);
     });
 
-    // Send a message
     document.getElementById("messageForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const sender = "@Context.Session.GetString("Nickname")";
