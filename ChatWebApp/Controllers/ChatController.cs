@@ -14,26 +14,23 @@ namespace ChatWebApp.Controllers
             _context = context;
         }
 
-        // GET: Display the list of chats
+        // GET
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             int userId = int.Parse(HttpContext.Session.GetString("UserId"));
 
-            // Retrieve all chats where the logged-in user is either AdminUser or ParticipantUser
             var chats = await _context.Chat
                 .Include(c => c.AdminUser)
                 .Include(c => c.ParticipantUser)
                 .Where(c => c.AdminUserId == userId || c.ParticipantUserId == userId)
                 .ToListAsync();
 
-            // Pass the chats and logged-in userId to the view
             ViewBag.UserId = userId;
             return View(chats);
         }
 
 
-        // 1. GET: Search for a user by nickname
         [HttpGet]
         public async Task<IActionResult> SearchUser(string nickname)
         {
@@ -51,19 +48,15 @@ namespace ChatWebApp.Controllers
                 return View();
             }
 
-            // Pass the found user details to the view
             return View(user);
         }
 
-
-        // 2. POST: Create or retrieve a chat between two users
         [HttpPost]
         public async Task<IActionResult> GetOrCreateChat(int adminUserId, int participantUserId)
         {
             if (adminUserId == participantUserId)
                 return Json(new { success = false, message = "Cannot create a chat with yourself." });
 
-            // Check if chat already exists
             var existingChat = await _context.Chat
                 .FirstOrDefaultAsync(c =>
                     (c.AdminUserId == adminUserId && c.ParticipantUserId == participantUserId) ||
@@ -72,7 +65,6 @@ namespace ChatWebApp.Controllers
             if (existingChat != null)
                 return Json(new { success = true, chatId = existingChat.ChatId });
 
-            // Create a new chat
             var newChat = new Chat
             {
                 AdminUserId = adminUserId,
@@ -85,30 +77,25 @@ namespace ChatWebApp.Controllers
             return Json(new { success = true, chatId = newChat.ChatId });
         }
 
-        // 3. POST: Send a message
         [HttpPost]
         public async Task<IActionResult> SendMessage(int chatId, string text)
         {
             if (string.IsNullOrEmpty(text))
                 return View("ChatMessages", new { success = false, error = "Message text is required." });
 
-            // Retrieve the logged-in user's ID from the session
             if (!HttpContext.Session.TryGetValue("UserId", out var userIdBytes))
                 return RedirectToAction("Login", "Account"); // Redirect to login if not logged in
 
             int senderId = int.Parse(System.Text.Encoding.UTF8.GetString(userIdBytes));
 
-            // Check if the sender exists
             var sender = await _context.User.FindAsync(senderId);
             if (sender == null)
                 return View("ChatMessages", new { success = false, error = "Sender does not exist." });
 
-            // Check if the chat exists
             var chat = await _context.Chat.FindAsync(chatId);
             if (chat == null)
                 return View("ChatMessages", new { success = false, error = "Chat does not exist." });
 
-            // Save the message
             var message = new Message
             {
                 ChatId = chatId,
@@ -121,14 +108,12 @@ namespace ChatWebApp.Controllers
             _context.Message.Add(message);
             await _context.SaveChangesAsync();
 
-            // Redirect back to the ChatMessages view after saving
             return RedirectToAction("ChatMessages", new { chatId = chatId });
         }
 
         [HttpPost]
         public async Task<IActionResult> SendMessageToUser(int recipientId, string message)
         {
-            // Retrieve the sender's UserId from the session
             if (!HttpContext.Session.TryGetValue("UserId", out var userIdBytes))
             {
                 return RedirectToAction("Login", "Account"); // Redirect to login if not logged in
@@ -136,7 +121,6 @@ namespace ChatWebApp.Controllers
 
             int senderId = int.Parse(System.Text.Encoding.UTF8.GetString(userIdBytes));
 
-            // Check if the recipient exists
             var recipient = await _context.User.FindAsync(recipientId);
             if (recipient == null)
             {
@@ -144,12 +128,10 @@ namespace ChatWebApp.Controllers
                 return RedirectToAction("SearchUser");
             }
 
-            // Check if a chat between the two users exists
             var existingChat = await _context.Chat.FirstOrDefaultAsync(c =>
                 (c.AdminUserId == senderId && c.ParticipantUserId == recipientId) ||
                 (c.AdminUserId == recipientId && c.ParticipantUserId == senderId));
 
-            // If no chat exists, create one
             if (existingChat == null)
             {
                 existingChat = new Chat
@@ -160,8 +142,6 @@ namespace ChatWebApp.Controllers
                 _context.Chat.Add(existingChat);
                 await _context.SaveChangesAsync();
             }
-
-            // Save the message
             var newMessage = new Message
             {
                 ChatId = existingChat.ChatId,
@@ -173,16 +153,9 @@ namespace ChatWebApp.Controllers
             _context.Message.Add(newMessage);
             await _context.SaveChangesAsync();
 
-            // Redirect to the ChatMessages view to see the conversation
             return RedirectToAction("ChatMessages", new { chatId = existingChat.ChatId });
         }
 
-
-        // 4. GET: Retrieve all messages for a chat
-
-
-
-        // GET: Retrieve chat messages as JSON (for APIs)
         [HttpGet]
         public async Task<IActionResult> GetChatMessages(int chatId)
         {
@@ -203,8 +176,6 @@ namespace ChatWebApp.Controllers
             return Json(new { success = true, messages = formattedMessages });
         }
 
-
-
         [HttpGet]
         public async Task<IActionResult> ChatMessages(int chatId)
         {
@@ -214,11 +185,9 @@ namespace ChatWebApp.Controllers
                 .Include(m => m.Sender)
                 .ToListAsync();
 
-            ViewBag.ChatId = chatId; // Pass the chatId to the view
+            ViewBag.ChatId = chatId; 
             return View(messages);
         }
-
-
 
     }
 }
