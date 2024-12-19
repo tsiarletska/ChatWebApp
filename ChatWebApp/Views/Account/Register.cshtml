@@ -1,0 +1,32 @@
+﻿@model ChatWebApp.Models.User
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h2>Register</h2>
+    <form method="post" asp-action="Register" asp-controller="Account">
+        <div>
+            <label>Nickname</label>
+            <input asp-for="Nickname" required />
+        </div>
+        <div>
+            <label>Password</label>
+            <input asp-for="Password" type="password" required />
+        </div>
+        <div>
+            <label>Email</label>
+            <input asp-for="Email" type="email" required />
+        </div>
+        <button type="submit">Register</button>
+    </form>
+    <div>
+        <a asp-action="Login" asp-controller="Account">Already have an account? Login here</a>
+    </div>
+</body>
+</html>
