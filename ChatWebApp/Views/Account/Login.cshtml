@@ -1,0 +1,31 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form method="post" asp-action="Login" asp-controller="Account">
+        <div>
+            <label>Nickname</label>
+            <input type="text" name="nickname" required />
+        </div>
+        <div>
+            <label>Password</label>
+            <input type="password" name="password" required />
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    <div>
+        <a asp-action="Register" asp-controller="Account">Don't have an account? Register here</a>
+    </div>
+
+    @if (ViewBag.Error != null)
+    {
+        <p style="color:red;">@ViewBag.Error</p>
+    }
+</body>
+</html>

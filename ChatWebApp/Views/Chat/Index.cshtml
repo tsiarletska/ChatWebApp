@@ -1,0 +1,48 @@
+﻿@model List<ChatWebApp.Models.Chat>
+
+@{
+    ViewData["Title"] = "Chats";
+    var userId = (int)ViewBag.UserId; // Logged-in user's ID
+}
+
+<h2>Your Chats</h2>
+
+<!-- Display existing chats -->
+@if (Model != null && Model.Any())
+{
+    <ul>
+        @foreach (var chat in Model)
+        {
+
+            <li>
+                Chat with:
+                @if (chat.ParticipantUser != null)
+                {
+                    @chat.ParticipantUser.Nickname
+                }
+                <a asp-action="ChatMessages" asp-route-chatId="@chat.ChatId">View Chat</a>
+            </li>
+
+        }
+    </ul>
+}
+else
+{
+    <p>You don't have any chats yet.</p>
+}
+
+
+
+
+
+
+
+
+
+<!-- Search User Form -->
+<h3>Start New Chat</h3>
+<form asp-action="SearchUser" method="get">
+    <label for="nickname">Search User by Nickname:</label>
+    <input type="text" name="nickname" id="nickname" required />
+    <button type="submit">Search</button>
+</form>

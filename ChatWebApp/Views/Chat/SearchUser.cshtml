@@ -1,0 +1,25 @@
+﻿@model ChatWebApp.Models.User
+
+<h2>Search Results</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red;">@ViewBag.Error</p>
+}
+else if (Model != null)
+{
+    <p>User Found: <strong>@Model.Nickname</strong></p>
+
+    <!-- Message Form -->
+    <form asp-action="SendMessageToUser" asp-controller="Chat" method="post">
+        <input type="hidden" name="recipientId" value="@Model.UserId" />
+        <label for="message">Write a message:</label>
+        <textarea name="message" id="message" rows="4" required></textarea>
+        <br />
+        <button type="submit">Send Message</button>
+    </form>
+}
+else
+{
+    <p>No user found. Try searching again.</p>
+}
